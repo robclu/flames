@@ -53,9 +53,9 @@ class BasicBlockImpl : public torch::nn::Module {
 
  private:
   Conv        _conv_1      = nullptr; //!< 1st conv layer.
+  Norm        _batchnorm_1 = nullptr; //!< 1st normalization layer.
   Conv        _conv_2      = nullptr; //!< 2nd conv layer.
-  Norm        _norm_1      = nullptr; //!< 1st normalization layer.
-  Norm        _norm_2      = nullptr; //!< 2nd normlaization layer.
+  Norm        _batchnorm_2 = nullptr; //!< 2nd normlaization layer.
   Relu        _relu        = nullptr; //!< ReLu layer.
   DownSampler _downsampler = nullptr; //!< Downsampler.
 };

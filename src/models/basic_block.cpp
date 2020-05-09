@@ -23,28 +23,29 @@ BasicBlockImpl::BasicBlockImpl(
   int64_t     output_channels,
   int64_t     stride,
   DownSampler downsampler)
-: _conv_1(conv_3x3(input_channels, output_channels, stride)),
-  _conv_2(conv_3x3(output_channels, output_channels)),
-  _norm_1(output_channels),
-  _norm_2(output_channels),
-  _downsampler(downsampler) {
+: _conv_1{conv_3x3(input_channels, output_channels, stride)},
+  _batchnorm_1{output_channels},
+  _conv_2{conv_3x3(output_channels, output_channels)},
+  _batchnorm_2{output_channels},
+  _relu{torch::nn::ReLUOptions().inplace(true)},
+  _downsampler{downsampler} {
   register_module("conv_1", _conv_1);
+  register_module("batchnorm_1", _batchnorm_1);
   register_module("conv_2", _conv_2);
-  register_module("norm_1", _norm_1);
-  register_module("norm_2", _norm_2);
+  register_module("batchnorm_2", _batchnorm_2);
   register_module("relu", _relu);
 
-  if (downsampler) {
+  if (_downsampler) {
     register_module("downsampler", _downsampler);
   }
 }
 
 auto BasicBlockImpl::forward(torch::Tensor x) -> torch::Tensor {
   auto out = _conv_1->forward(x);
-  out      = _norm_1->forward(out);
+  out      = _batchnorm_1->forward(out);
   out      = _relu->forward(out);
   out      = _conv_2->forward(out);
-  out      = _norm_2->forward(out);
+  out      = _batchnorm_2->forward(out);
 
   auto residual = _downsampler ? _downsampler->forward(x) : x;
   out += residual;
