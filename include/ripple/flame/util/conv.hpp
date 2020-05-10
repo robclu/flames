@@ -29,6 +29,28 @@ constexpr int64_t stride_2 = 2; //!< Constants for a stride of two.
 
 //==--- [functions] --------------------------------------------------------==//
 
+/// Returns a torch::nn::Conv2d operation with a 7x7 kernel, wiht no bias.
+/// \param input_channels  The number of input channels.
+/// \param output_channels The number of output channels.
+/// \param stride          The stride for the convolution.
+/// \param padding         The padding for the kernel.
+auto conv_7x7(
+  int64_t input_channels,
+  int64_t output_channels,
+  int64_t stride  = 1,
+  int64_t padding = 1) -> torch::nn::Conv2d;
+
+/// Returns a torch::nn::Conv2d operation with a 5x5 kernel, wiht no bias.
+/// \param input_channels  The number of input channels.
+/// \param output_channels The number of output channels.
+/// \param stride          The stride for the convolution.
+/// \param padding         The padding for the kernel.
+auto conv_5x5(
+  int64_t input_channels,
+  int64_t output_channels,
+  int64_t stride  = 1,
+  int64_t padding = 1) -> torch::nn::Conv2d;
+
 /// Returns a torch::nn::Conv2d operation with a 3x3 kernel, wiht no bias.
 /// \param input_channels  The number of input channels.
 /// \param output_channels The number of output channels.
