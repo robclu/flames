@@ -29,7 +29,7 @@ class BasicBlockImpl : public torch::nn::Module {
  public:
   using DownSampler = torch::nn::Sequential; //!< Sampler type.
 
-  /// Defines the expansion factor for the block.
+  /// The expansion factor for the block.
   static constexpr int64_t expansion = 1;
 
   /// Default constructor.
@@ -60,8 +60,15 @@ class BasicBlockImpl : public torch::nn::Module {
   DownSampler _downsampler = nullptr; //!< Downsampler.
 };
 
-// Make the implementation into a torch module.
-TORCH_MODULE(BasicBlock);
+/// Wrapper to make the Bottleneck block into a torch module. We don;t use the
+/// macro here because we need to expose the expansion factor of the block.
+class BasicBlock : public torch::nn::ModuleHolder<BasicBlockImpl> {
+ public:
+  using torch::nn::ModuleHolder<BasicBlockImpl>::ModuleHolder;
+
+  /// Make the expansion available to networks using the block.
+  static constexpr int64_t expansion = BasicBlockImpl::expansion;
+};
 
 } // namespace ripple::flame::models
 

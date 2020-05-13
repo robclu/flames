@@ -62,8 +62,15 @@ class BottleneckImpl : public torch::nn::Module {
   DownSampler _downsampler = nullptr; //!< Downsampler.
 };
 
-// Make the implementation into a torch module.
-TORCH_MODULE(Bottleneck);
+/// Wrapper to make the Bottleneck block into a torch module. We don;t use the
+/// macro here because we need to expose the expansion factor of the block.
+class Bottleneck : public torch::nn::ModuleHolder<BottleneckImpl> {
+ public:
+  using torch::nn::ModuleHolder<BottleneckImpl>::ModuleHolder;
+
+  /// Make the expansion available to networks using the block.
+  static constexpr int64_t expansion = BottleneckImpl::expansion;
+};
 
 } // namespace ripple::flame::models
 

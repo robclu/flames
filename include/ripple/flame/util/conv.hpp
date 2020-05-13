@@ -71,7 +71,7 @@ auto conv_1x1(
   int64_t input_channels,
   int64_t output_channels,
   int64_t stride  = 1,
-  int64_t padding = 1) -> torch::nn::Conv2d;
+  int64_t padding = 0) -> torch::nn::Conv2d;
 
 } // namespace ripple::flame
 
