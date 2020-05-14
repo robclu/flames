@@ -15,14 +15,15 @@
 
 #include <ripple/flame/models/basic_block.hpp>
 #include <ripple/flame/models/bottleneck.hpp>
+#include <ripple/flame/models/resnet_v2.hpp>
 #include <iostream>
 
 int main() {
   using namespace ripple::flame;
 
-  models::BasicBlock bb;
-  models::Bottleneck bottleneck;
+  auto r1 = models::resnet_v2_50<models::Bottleneck>();
 
-  torch::Tensor tensor = torch::rand({2, 3});
-  std::cout << tensor << std::endl;
+  torch::Tensor tensor = torch::rand({2, 3, 224, 224});
+  auto          out1   = r1->forward(tensor);
+  std::cout << out1 << std::endl;
 }
