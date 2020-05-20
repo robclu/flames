@@ -1,27 +1,27 @@
-//==--- flame/models/bottleneck.hpp ------------------------ -*- C++ -*- ---==//
+//==--- flame/models/basic_block.hpp ----------------------- -*- C++ -*- ---==//
 //
-//                           Ripple - Flame
+//                              Flame
 //
-//                      Copyright (c) 2020 Ripple
+//                      Copyright (c) 2020 Rob Clucas
 //
 //  This file is distributed under the MIT License. See LICENSE for details.
 //
 //==------------------------------------------------------------------------==//
 //
-/// \file  bottleneck.hpp
-/// \brief Header file for a bottleneck block for resnet V2.
+/// \file  basic_block.hpp
+/// \brief Header file for a basic block for a residual network.
 //
 //==------------------------------------------------------------------------==//
 
-#ifndef RIPPLE_FLAME_MODELS_BOTTLENECK_HPP
-#define RIPPLE_FLAME_MODELS_BOTTLENECK_HPP
+#ifndef FLAME_MODELS_BASIC_BLOCK_HPP
+#define FLAME_MODELS_BASIC_BLOCK_HPP
 
 #include <torch/torch.h>
 
-namespace ripple::flame::models {
+namespace flame::models {
 
-/// This type defines a bottleneck block for resnet V2.
-class BottleneckImpl : public torch::nn::Module {
+/// This type defines a block in a residual neural network.
+class BasicBlockImpl : public torch::nn::Module {
   using Conv = torch::nn::Conv2d;      //!< Convolution type.
   using Norm = torch::nn::BatchNorm2d; //!< Norm type.
   using Relu = torch::nn::ReLU;        //!< Relu type.
@@ -30,17 +30,17 @@ class BottleneckImpl : public torch::nn::Module {
   using DownSampler = torch::nn::Sequential; //!< Sampler type.
 
   /// The expansion factor for the block.
-  static constexpr int64_t expansion = 4;
+  static constexpr int64_t expansion = 1;
 
-  // Default constructor.
-  BottleneckImpl() = default;
+  /// Default constructor.
+  BasicBlockImpl() = default;
 
   /// Constructor to configure the block.
   /// \param input_channels  The number of input channels.
   /// \param output_channels The number of output channels.
   /// \param stride          The stride for the convolution.
   /// \param downsamper      The downsampler for the block.
-  BottleneckImpl(
+  BasicBlockImpl(
     int64_t     input_channels,
     int64_t     output_channels,
     int64_t     stride      = 1,
@@ -55,23 +55,21 @@ class BottleneckImpl : public torch::nn::Module {
   Conv        _conv_1      = nullptr; //!< 1st conv layer.
   Norm        _batchnorm_1 = nullptr; //!< 1st normalization layer.
   Conv        _conv_2      = nullptr; //!< 2nd conv layer.
-  Norm        _batchnorm_2 = nullptr; //!< 2nd normalization layer.
-  Conv        _conv_3      = nullptr; //!< 3rd conv layer.
-  Norm        _batchnorm_3 = nullptr; //!< 3rd normlaization layer.
+  Norm        _batchnorm_2 = nullptr; //!< 2nd normlaization layer.
   Relu        _relu        = nullptr; //!< ReLu layer.
   DownSampler _downsampler = nullptr; //!< Downsampler.
 };
 
 /// Wrapper to make the Bottleneck block into a torch module. We don;t use the
 /// macro here because we need to expose the expansion factor of the block.
-class Bottleneck : public torch::nn::ModuleHolder<BottleneckImpl> {
+class BasicBlock : public torch::nn::ModuleHolder<BasicBlockImpl> {
  public:
-  using torch::nn::ModuleHolder<BottleneckImpl>::ModuleHolder;
+  using torch::nn::ModuleHolder<BasicBlockImpl>::ModuleHolder;
 
   /// Make the expansion available to networks using the block.
-  static constexpr int64_t expansion = BottleneckImpl::expansion;
+  static constexpr int64_t expansion = BasicBlockImpl::expansion;
 };
 
-} // namespace ripple::flame::models
+} // namespace flame::models
 
-#endif // RIPPLE_FLAME_MODELS_BOTTLENECK_HPP
+#endif // FLAME_MODELS_BASIC_BLOCK_HPP

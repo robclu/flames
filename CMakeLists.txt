@@ -1,6 +1,6 @@
 #==--- flame/CMakeLists.txt -------------------------------------------------==#
 #
-#                      Copyright (c) 2020 Ripple
+#                      Copyright (c) 2020 Rob Clucas
 #
 #  This file is distributed under the MIT License. See LICENSE for details.
 #
@@ -14,7 +14,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #===== [packages] =============================================================#
 
-set(CMAKE_PREFIX_PATH "~/opt/libtorch/")
+# Change to path to pytorch install
+set(CMAKE_PREFIX_PATH "~/opt/libtorch")
 
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")

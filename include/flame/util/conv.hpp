@@ -1,8 +1,8 @@
 //==--- flame/util/conv.hpp -------------------------------- -*- C++ -*- ---==//
 //
-//                            Ripple - Flame
+//                                Flame
 //
-//                      Copyright (c) 2020 Ripple
+//                      Copyright (c) 2020 Rob Clucas
 //
 //  This file is distributed under the MIT License. See LICENSE for details.
 //
@@ -13,12 +13,12 @@
 //
 //==------------------------------------------------------------------------==//
 
-#ifndef RIPPLE_FLAME_UTIL_CONV_HPP
-#define RIPPLE_FLAME_UTIL_CONV_HPP
+#ifndef FLAME_UTIL_CONV_HPP
+#define FLAME_UTIL_CONV_HPP
 
 #include <torch/torch.h>
 
-namespace ripple::flame {
+namespace flame {
 
 //==--- [constants] --------------------------------------------------------==//
 
@@ -73,6 +73,6 @@ auto conv_1x1(
   int64_t stride  = 1,
   int64_t padding = 0) -> torch::nn::Conv2d;
 
-} // namespace ripple::flame
+} // namespace flame
 
-#endif // RIPPLE_FLAME_UTIL_CONV_HPP
+#endif // FLAME_UTIL_CONV_HPP

@@ -1,8 +1,8 @@
 //==--- src/models/basic_block.cpp ------------------------- -*- C++ -*- ---==//
 //
-//                          Ripple - Fastpose
+//                                Flame
 //
-//                      Copyright (c) 2020 Ripple
+//                      Copyright (c) 2020 Flame
 //
 //  This file is distributed under the MIT License. See LICENSE for details.
 //
@@ -13,10 +13,10 @@
 //
 //==------------------------------------------------------------------------==//
 
-#include <ripple/flame/models/basic_block.hpp>
-#include <ripple/flame/util/conv.hpp>
+#include <flame/models/basic_block.hpp>
+#include <flame/util/conv.hpp>
 
-namespace ripple::flame::models {
+namespace flame::models {
 
 BasicBlockImpl::BasicBlockImpl(
   int64_t     input_channels,
@@ -54,4 +54,4 @@ auto BasicBlockImpl::forward(torch::Tensor x) -> torch::Tensor {
   return out;
 }
 
-} // namespace ripple::flame::models
+} // namespace flame::models

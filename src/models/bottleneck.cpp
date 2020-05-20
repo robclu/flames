@@ -1,8 +1,8 @@
 //==--- src/models/bottleneck.cpp -------------------------- -*- C++ -*- ---==//
 //
-//                          Ripple - Flame
+//                                Flame
 //
-//                      Copyright (c) 2020 Ripple
+//                      Copyright (c) 2020 Rob Clucas
 //
 //  This file is distributed under the MIT License. See LICENSE for details.
 //
@@ -13,10 +13,10 @@
 //
 //==------------------------------------------------------------------------==//
 
-#include <ripple/flame/models/bottleneck.hpp>
-#include <ripple/flame/util/conv.hpp>
+#include <flame/models/bottleneck.hpp>
+#include <flame/util/conv.hpp>
 
-namespace ripple::flame::models {
+namespace flame::models {
 
 BottleneckImpl::BottleneckImpl(
   int64_t     input_channels,
@@ -66,4 +66,4 @@ auto BottleneckImpl::forward(torch::Tensor x) -> torch::Tensor {
   return out;
 }
 
-} // namespace ripple::flame::models
+} // namespace flame::models

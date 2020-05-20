@@ -1,8 +1,8 @@
 //==--- flame/src/util/conv.cpp ---------------------------- -*- C++ -*- ---==//
 //
-//                            Ripple - Flame
+//                                Flame
 //
-//                      Copyright (c) 2020 Ripple
+//                      Copyright (c) 2020 Rob Clucas
 //
 //  This file is distributed under the MIT License. See LICENSE for details.
 //
@@ -13,9 +13,9 @@
 //
 //==------------------------------------------------------------------------==//
 
-#include <ripple/flame/util/conv.hpp>
+#include <flame/util/conv.hpp>
 
-namespace ripple::flame {
+namespace flame {
 
 auto conv_7x7(
   int64_t input_channels,
@@ -73,4 +73,4 @@ auto conv_1x1(
       .bias(bias));
 }
 
-} // namespace ripple::flame
+} // namespace flame

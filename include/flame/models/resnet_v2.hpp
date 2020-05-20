@@ -1,8 +1,8 @@
 //==--- flame/models/resnet_v2.hpp ------------------------- -*- C++ -*- ---==//
 //
-//                            Ripple - Flame
+//                                Ripple
 //
-//                      Copyright (c) 2020 Ripple
+//                      Copyright (c) 2020 Rob Clucas
 //
 //  This file is distributed under the MIT License. See LICENSE for details.
 //
@@ -13,13 +13,13 @@
 //
 //==------------------------------------------------------------------------==//
 
-#ifndef RIPPLE_FLAME_MODELS_RESNET_V2_HPP
-#define RIPPLE_FLAME_MODELS_RESNET_V2_HPP
+#ifndef FLAME_MODELS_RESNET_V2_HPP
+#define FLAME_MODELS_RESNET_V2_HPP
 
-#include <ripple/flame/util/conv.hpp>
+#include <flame/util/conv.hpp>
 #include <array>
 
-namespace ripple::flame::models {
+namespace flame::models {
 
 /// Thhis class defines an implementation of a residual neural network,
 /// version
@@ -35,7 +35,7 @@ class ResnetV2Impl : public torch::nn::Module {
   using FeatConnector = torch::nn::Linear;      //!< Feature connector type.
   using Layer         = torch::nn::Sequential;  //!< The type of the layers.
 
-  //==--- [default sices] --------------------------------------------------==//
+  //==--- [default sizes] --------------------------------------------------==//
 
   static constexpr int64_t first_conv_outputs = 64;
   static constexpr int64_t classes_def        = 1000;
@@ -195,6 +195,6 @@ auto resnet_v2_50(int64_t classes = 1000, bool pretrained = false)
   return ResnetV2<Block>{layer_sizes, classes};
 }
 
-} // namespace ripple::flame::models
+} // namespace flame::models
 
-#endif // RIPPLE_FLAME_MODELS_RESNET_V2_HPP
+#endif // FLAME_MODELS_RESNET_V2_HPP
