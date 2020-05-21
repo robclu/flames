@@ -16,12 +16,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Change to path to pytorch install
 set(CMAKE_PREFIX_PATH "~/opt/libtorch")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 #===== [subdirs] ==============================================================#
 
+add_subdirectory(docs)
 add_subdirectory(examples)
 
 #==============================================================================#
