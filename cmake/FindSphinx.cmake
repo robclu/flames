@@ -1,4 +1,11 @@
-#Look for an executable called sphinx-build
+#==--- flame/cmake/FindSphinx.cmake -----------------------------------------==#
+#
+#                      Copyright (c) 2020 Rob Clucas
+#
+#  This file is distributed under the MIT License. See LICENSE for details.
+#
+#==--------------------------------------------------------------------------==#
+
 find_program(
   SPHINX_EXECUTABLE
   NAMES sphinx-build
