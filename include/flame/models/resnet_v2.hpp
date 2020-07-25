@@ -16,10 +16,17 @@
 #ifndef FLAME_MODELS_RESNET_V2_HPP
 #define FLAME_MODELS_RESNET_V2_HPP
 
+#include "basic_block.hpp"
+#include "bottleneck.hpp"
 #include <flame/util/conv.hpp>
+#include <torch/script.h>
 #include <array>
+#include <filesystem>
 
 namespace flame::models {
+
+/// Defines the path of this file.
+static constexpr const char* this_file_path = __FILE__;
 
 /// Thhis class defines an implementation of a residual neural network,
 /// version 2. It can be configured by changing the type of the block.
@@ -65,21 +72,31 @@ class ResnetV2Impl : public torch::nn::Module {
     _relu{relu_options()},
     _max_pool{maxpool_options()},
     _layer_1{make_layer(layer_1_out_channels, layer_sizes[0], stride_2)},
-    _layer_2{make_layer(layer_2_out_channels, layer_sizes[0], stride_2)},
-    _layer_3{make_layer(layer_3_out_channels, layer_sizes[0], stride_2)},
-    _layer_4{make_layer(layer_4_out_channels, layer_sizes[0])},
+    _layer_2{make_layer(layer_2_out_channels, layer_sizes[1], stride_2)},
+    _layer_3{make_layer(layer_3_out_channels, layer_sizes[2], stride_2)},
+    _layer_4{make_layer(layer_4_out_channels, layer_sizes[3])},
     _avg_pool{avgpool_options()},
     _fc{_in_channels, classes} {
-    register_module("conv", _conv);
-    register_module("batchnorm", _batchnorm);
+    register_module("conv1", _conv);
+    register_module("bn1", _batchnorm);
     register_module("relu", _relu);
-    register_module("max_pool", _max_pool);
-    register_module("layer_1", _layer_1);
-    register_module("layer_2", _layer_2);
-    register_module("layer_3", _layer_3);
-    register_module("layer_4", _layer_4);
-    register_module("average_pool", _avg_pool);
-    register_module("feature_connector", _fc);
+    register_module("maxpool", _max_pool);
+    register_module("layer1", _layer_1);
+    register_module("layer2", _layer_2);
+    register_module("layer3", _layer_3);
+    register_module("layer4", _layer_4);
+    register_module("avgpool", _avg_pool);
+    register_module("fc", _fc);
+
+    namespace nn = torch::nn;
+    for (auto& module : modules(false)) {
+      if (auto mod = dynamic_cast<nn::Conv2dImpl*>(module.get())) {
+        nn::init::kaiming_normal_(mod->weight, 0, torch::kFanOut, torch::kReLU);
+      } else if (auto mod = dynamic_cast<nn::BatchNorm2dImpl*>(module.get())) {
+        nn::init::constant_(mod->weight, 1);
+        nn::init::constant_(mod->bias, 0);
+      }
+    }
   }
 
   /// Forward pass for the network, returning the result.
@@ -185,17 +202,38 @@ class ResnetV2 : public torch::nn::ModuleHolder<ResnetV2Impl<Block>> {
   using torch::nn::ModuleHolder<ResnetV2Impl<Block>>::ModuleHolder;
 };
 
-/// Creates a RednetV2-50 model, with the Block type of block.
+/// Creates a ResnetV2-34 model.
+/// \param  classes    The number of classes for the model. If 0, then the
+///                    output  of the forward pass returns the features instead
+///                    of the classification.
+/// \param  pretrained If a pretrained model should be returned.
+auto resnet34(int64_t classes = 1000, bool pretrained = false)
+  -> ResnetV2<BasicBlock> {
+  auto layer_sizes = std::array<int64_t, 4>{3, 4, 6, 3};
+  return ResnetV2<BasicBlock>{layer_sizes, classes};
+}
+
+/// Creates a RednetV2-50 model.
 /// \param classes    The number of classes for the model. If 0, then the output
 ///                   of the forward pass returns the features instead of the
 ///                   classification.
 /// \param pretrained If a pretrained model should be returned.
-/// \tparam Block     The type of the block for the model.
-template <typename Block>
-auto resnet_v2_50(int64_t classes = 1000, bool pretrained = false)
-  -> ResnetV2<Block> {
+auto resnet50(int64_t classes = 1000, bool pretrained = false)
+  -> ResnetV2<Bottleneck> {
   auto layer_sizes = std::array<int64_t, 4>{3, 4, 6, 3};
-  return ResnetV2<Block>{layer_sizes, classes};
+  auto model       = ResnetV2<Bottleneck>{layer_sizes, classes};
+  if (pretrained) {
+    namespace fs    = std::filesystem;
+    auto model_path = fs::path(this_file_path)
+                        .parent_path() // remove filename
+                        .parent_path() // remove models
+                        .parent_path() // remove flame
+                        .parent_path() // remove include
+                        .append("models")
+                        .append("resnet50.pt");
+    torch::load(model, model_path);
+  }
+  return model;
 }
 
 } // namespace flame::models

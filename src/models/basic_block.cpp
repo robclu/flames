@@ -29,14 +29,14 @@ BasicBlockImpl::BasicBlockImpl(
   _batchnorm_2{output_channels},
   _relu{torch::nn::ReLUOptions().inplace(true)},
   _downsampler{downsampler} {
-  register_module("conv_1", _conv_1);
-  register_module("batchnorm_1", _batchnorm_1);
-  register_module("conv_2", _conv_2);
-  register_module("batchnorm_2", _batchnorm_2);
+  register_module("conv1", _conv_1);
+  register_module("bn1", _batchnorm_1);
+  register_module("conv2", _conv_2);
+  register_module("bn2", _batchnorm_2);
   register_module("relu", _relu);
 
   if (_downsampler) {
-    register_module("downsampler", _downsampler);
+    register_module("downsample", _downsampler);
   }
 }
 
