@@ -49,13 +49,16 @@ auto conv_3x3(
   int64_t input_channels,
   int64_t output_channels,
   int64_t stride,
-  int64_t padding) -> torch::nn::Conv2d {
+  int64_t groups,
+  int64_t dilation) -> torch::nn::Conv2d {
   constexpr int64_t kernel_size_xy = 3;
   constexpr bool    bias           = false;
   return torch::nn::Conv2d(
     torch::nn::Conv2dOptions(input_channels, output_channels, kernel_size_xy)
       .stride(stride)
-      .padding(padding)
+      .padding(dilation)
+      .groups(groups)
+      .dilation(dilation)
       .bias(bias));
 }
 

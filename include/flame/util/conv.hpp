@@ -55,12 +55,14 @@ auto conv_5x5(
 /// \param input_channels  The number of input channels.
 /// \param output_channels The number of output channels.
 /// \param stride          The stride for the convolution.
-/// \param padding         The padding for the kernel.
+/// \param groups          The number of groups for the convolution.
+/// \param dilation        The dilation for the convolution.
 auto conv_3x3(
   int64_t input_channels,
   int64_t output_channels,
-  int64_t stride  = 1,
-  int64_t padding = 1) -> torch::nn::Conv2d;
+  int64_t stride   = 1,
+  int64_t groups   = 1,
+  int64_t dilation = 1) -> torch::nn::Conv2d;
 
 /// Returns a torch::nn::Conv2d operation with a 1x1 kernel, with no bias.
 /// \param input_channels  The number of input channels.
