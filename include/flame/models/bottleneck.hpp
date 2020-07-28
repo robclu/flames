@@ -36,30 +36,39 @@ class BottleneckImpl : public torch::nn::Module {
   BottleneckImpl() = default;
 
   /// Constructor to configure the block.
-  /// \param input_channels  The number of input channels.
-  /// \param output_channels The number of output channels.
-  /// \param stride          The stride for the convolution.
-  /// \param downsamper      The downsampler for the block.
+  /// \param inplanes   The number of input planes
+  /// \param planes     The number of reduced channels for the middle conv.
+  /// \param stride     The stride for the convolution.
+  /// \param downsamper The downsampler for the block.
+  /// \param groups     The numebr of groups in the convolution.
+  /// \param base_width The base width (number of planes) of the convolution.
+  /// \param dilation   The dilation for the convolution.
   BottleneckImpl(
-    int64_t     input_channels,
-    int64_t     output_channels,
+    int64_t     inplanes,
+    int64_t     planes,
     int64_t     stride      = 1,
-    DownSampler downsampler = nullptr);
+    DownSampler downsampler = nullptr,
+    int64_t     groups      = 1,
+    int64_t     base_width  = 64,
+    int64_t     dilation    = 1);
 
   /// Feeds the tensor \p x through the block in the forward direction,
   /// returning the result.
   /// \param x The input tensor to pass through the block.
-  auto forward(torch::Tensor x) -> torch::Tensor;
+  auto forward(const torch::Tensor& x) -> torch::Tensor;
+
+  /// Zero initializes the last residual layer.
+  auto zero_init_residual() -> void;
 
  private:
-  Conv        _conv_1      = nullptr; //!< 1st conv layer.
-  Norm        _batchnorm_1 = nullptr; //!< 1st normalization layer.
-  Conv        _conv_2      = nullptr; //!< 2nd conv layer.
-  Norm        _batchnorm_2 = nullptr; //!< 2nd normalization layer.
-  Conv        _conv_3      = nullptr; //!< 3rd conv layer.
-  Norm        _batchnorm_3 = nullptr; //!< 3rd normlaization layer.
-  Relu        _relu        = nullptr; //!< ReLu layer.
-  DownSampler _downsampler = nullptr; //!< Downsampler.
+  Conv        conv_1_      = nullptr; //!< 1st conv layer.
+  Norm        batchnorm_1_ = nullptr; //!< 1st normalization layer.
+  Conv        conv_2_      = nullptr; //!< 2nd conv layer.
+  Norm        batchnorm_2_ = nullptr; //!< 2nd normalization layer.
+  Conv        conv_3_      = nullptr; //!< 3rd conv layer.
+  Norm        batchnorm_3_ = nullptr; //!< 3rd normlaization layer.
+  Relu        relu_        = nullptr; //!< ReLu layer.
+  DownSampler downsampler_ = nullptr; //!< Downsampler.
 };
 
 /// Wrapper to make the Bottleneck block into a torch module. We don;t use the

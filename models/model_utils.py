@@ -33,7 +33,7 @@ def run_model(model, model_file, input_tensor, eval=True):
     if eval:
         with torch.no_grad():
             out = model(input_tensor)
-
+        print(input_tensor)
         print(out[0].softmax(dim=0).topk(5, dim=0))
     else:
         traced_script_model = torch.jit.trace(model, input_tensor)

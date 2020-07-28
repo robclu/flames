@@ -19,39 +19,54 @@
 namespace flame::models {
 
 BasicBlockImpl::BasicBlockImpl(
-  int64_t     input_channels,
-  int64_t     output_channels,
+  int64_t     inplanes,
+  int64_t     planes,
   int64_t     stride,
-  DownSampler downsampler)
-: _conv_1{conv_3x3(input_channels, output_channels, stride)},
-  _batchnorm_1{output_channels},
-  _conv_2{conv_3x3(output_channels, output_channels)},
-  _batchnorm_2{output_channels},
-  _relu{torch::nn::ReLUOptions().inplace(true)},
-  _downsampler{downsampler} {
-  register_module("conv1", _conv_1);
-  register_module("bn1", _batchnorm_1);
-  register_module("conv2", _conv_2);
-  register_module("bn2", _batchnorm_2);
-  register_module("relu", _relu);
+  DownSampler downsampler,
+  int64_t     groups,
+  int64_t     base_width,
+  int64_t     dilation)
+: conv_1_{conv_3x3(inplanes, planes, stride)},
+  batchnorm_1_{planes},
+  conv_2_{conv_3x3(planes, planes)},
+  batchnorm_2_{planes},
+  relu_{torch::nn::ReLUOptions().inplace(true)},
+  downsampler_{downsampler} {
+  if (groups != 1 || base_width != 64) {
+    assert(false && "BasicBlock only supports 1 groups and base width of 64!");
+  }
 
-  if (_downsampler) {
-    register_module("downsample", _downsampler);
+  if (dilation > 1) {
+    assert(false && "BasicBlock does not yet supports dilation > 1!");
+  }
+
+  register_module("conv1", conv_1_);
+  register_module("bn1", batchnorm_1_);
+  register_module("conv2", conv_2_);
+  register_module("bn2", batchnorm_2_);
+  register_module("relu", relu_);
+
+  if (downsampler_) {
+    register_module("downsample", downsampler_);
   }
 }
 
-auto BasicBlockImpl::forward(torch::Tensor x) -> torch::Tensor {
-  auto out = _conv_1->forward(x);
-  out      = _batchnorm_1->forward(out);
-  out      = _relu->forward(out);
-  out      = _conv_2->forward(out);
-  out      = _batchnorm_2->forward(out);
+auto BasicBlockImpl::forward(const torch::Tensor& x) -> torch::Tensor {
+  auto out = conv_1_->forward(x);
+  out      = batchnorm_1_->forward(out);
+  out      = relu_->forward(out);
+  out      = conv_2_->forward(out);
+  out      = batchnorm_2_->forward(out);
 
-  auto residual = _downsampler ? _downsampler->forward(x) : x;
+  auto residual = downsampler_ ? downsampler_->forward(x) : x;
   out += residual;
-  out = _relu->forward(out);
+  out = relu_->forward(out);
 
   return out;
+}
+
+auto BasicBlockImpl::zero_init_residual() -> void {
+  torch::nn::init::constant_(batchnorm_2_->weight, 0);
 }
 
 } // namespace flame::models

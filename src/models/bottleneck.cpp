@@ -19,51 +19,56 @@
 namespace flame::models {
 
 BottleneckImpl::BottleneckImpl(
-  int64_t     input_channels,
-  int64_t     output_channels,
+  int64_t     inplanes,
+  int64_t     planes,
   int64_t     stride,
-  DownSampler downsampler)
-: _conv_1(conv_1x1(input_channels, output_channels, stride_1, pad_0)),
-  _batchnorm_1(output_channels),
-  _conv_2(conv_3x3(output_channels, output_channels, stride, pad_1)),
-  _batchnorm_2(output_channels),
-  _conv_3(conv_1x1(
-    output_channels,
-    output_channels * BottleneckImpl::expansion,
-    stride_1,
-    pad_0)),
-  _batchnorm_3(output_channels * BottleneckImpl::expansion),
-  _relu(torch::nn::ReLUOptions().inplace(true)),
-  _downsampler(downsampler) {
-  register_module("conv1", _conv_1);
-  register_module("bn1", _batchnorm_1);
-  register_module("conv2", _conv_2);
-  register_module("bn2", _batchnorm_2);
-  register_module("conv3", _conv_3);
-  register_module("bn3", _batchnorm_3);
-  register_module("relu", _relu);
+  DownSampler downsampler,
+  int64_t     groups,
+  int64_t     base_width,
+  int64_t     dilation)
+: relu_(torch::nn::ReLUOptions().inplace(true)), downsampler_(downsampler) {
+  int64_t width = planes * (base_width / 64.0) * groups;
+
+  conv_1_      = conv_1x1(inplanes, width);
+  batchnorm_1_ = Norm(width);
+  conv_2_      = conv_3x3(width, width, stride, groups, dilation);
+  batchnorm_2_ = Norm(width);
+  conv_3_      = conv_1x1(width, planes * expansion);
+  batchnorm_3_ = Norm(planes * expansion);
+
+  register_module("conv1", conv_1_);
+  register_module("bn1", batchnorm_1_);
+  register_module("conv2", conv_2_);
+  register_module("bn2", batchnorm_2_);
+  register_module("conv3", conv_3_);
+  register_module("bn3", batchnorm_3_);
+  register_module("relu", relu_);
 
   if (downsampler) {
-    register_module("downsample", _downsampler);
+    register_module("downsample", downsampler_);
   }
 }
 
-auto BottleneckImpl::forward(torch::Tensor x) -> torch::Tensor {
-  auto out = _conv_1->forward(x);
-  out      = _batchnorm_1->forward(out);
-  out      = _relu->forward(out);
-  out      = _conv_2->forward(out);
-  out      = _batchnorm_2->forward(out);
-  out      = _relu->forward(out);
-  out      = _conv_3->forward(out);
-  out      = _batchnorm_3->forward(out);
+auto BottleneckImpl::forward(const torch::Tensor& x) -> torch::Tensor {
+  auto out = conv_1_->forward(x);
+  out      = batchnorm_1_->forward(out);
+  out      = relu_->forward(out);
+  out      = conv_2_->forward(out);
+  out      = batchnorm_2_->forward(out);
+  out      = relu_->forward(out);
+  out      = conv_3_->forward(out);
+  out      = batchnorm_3_->forward(out);
 
-  auto residual = _downsampler ? _downsampler->forward(x) : x;
+  auto residual = downsampler_ ? downsampler_->forward(x) : x;
 
   out += residual;
-  out = _relu->forward(out);
+  out = relu_->forward(out);
 
   return out;
+}
+
+auto BottleneckImpl::zero_init_residual() -> void {
+  torch::nn::init::constant_(batchnorm_3_->weight, 0);
 }
 
 } // namespace flame::models
