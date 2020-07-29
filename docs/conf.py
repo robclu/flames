@@ -192,6 +192,3 @@ texinfo_documents = [
      author, 'Flame', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

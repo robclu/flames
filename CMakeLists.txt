@@ -15,7 +15,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #===== [packages] =============================================================#
 
 # Change to path to pytorch install
-set(CMAKE_PREFIX_PATH "~/opt/libtorch")
+set(CMAKE_PREFIX_PATH "~/opt/libtorch;~/opt/opencv/build")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(Torch REQUIRED)
