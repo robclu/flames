@@ -1,6 +1,6 @@
 //==--- flame/models/resnet.hpp ---------------------------- -*- C++ -*- ---==//
 //
-//                                Ripple
+//                                Flame
 //
 //                      Copyright (c) 2020 Rob Clucas
 //
@@ -268,9 +268,12 @@ class Resnet : public torch::nn::ModuleHolder<ResnetImpl<Block>> {
 /// \tparam Model        The type of the model.
 template <typename Model>
 auto load_pretrained(Model& model, std::string archive_name) -> void {
-  namespace fs = std::filesystem;
-  auto model_path =
-    fs::path(std::getenv("FLAME_MODEL_PATH")).append(archive_name);
+  namespace fs   = std::filesystem;
+  auto root_path = std::getenv("FLAME_MODEL_PATH");
+  if (!root_path) {
+    assert(false && "Model path not loaded: Set $FLAME_MODEL_PATH!");
+  }
+  auto model_path = fs::path(root_path).append(archive_name);
   std::cout << model_path << std::endl;
   torch::load(model, model_path);
 }
