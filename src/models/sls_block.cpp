@@ -40,8 +40,7 @@ SlsBlockImpl::SlsBlockImpl(
   register_module("conv6", conv_6_);
 }
 
-auto SlsBlockImpl::forward(const std::vector<torch::Tensor>& x)
-  -> std::vector<torch::Tensor> {
+auto SlsBlockImpl::forward(const TensorList& x) -> TensorList {
   if (is_first_ && x.size() != 1 || !is_first_ && x.size() != 2) {
     assert(false && "Invalid tensor input size!");
   }
@@ -62,16 +61,15 @@ auto SlsBlockImpl::make_layer(
   int64_t kernel_width,
   int64_t stride,
   int64_t padding) -> Layer {
-  torch::nn::Conv2dOptions ops(inplanes, outplanes)
-    .kernel_size(kernel_size)
-    .stride(stride)
-    .padding(padding)
-    .bias(false)
-    .dilation(1)
-    .groups(1);
+  auto ops = torch::nn::Conv2dOptions(inplanes, outplanes, kernel_width)
+               .stride(stride)
+               .padding(padding)
+               .bias(false)
+               .dilation(1)
+               .groups(1);
 
   return Layer{
-    {Conv(ops), Norm(outplanes), Relu(torch::nn::ReLUOptions().inplace(true))}};
+    Conv(ops), Norm(outplanes), Relu(torch::nn::ReLUOptions().inplace(true))};
 }
 
 } // namespace flame::models

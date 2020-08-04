@@ -8,7 +8,7 @@
 //
 //==------------------------------------------------------------------------==//
 //
-/// \file  SlsBlock.cpp
+/// \file  SlsBlock.hpp
 /// \brief Header file for Select SLS Block.
 //
 //==------------------------------------------------------------------------==//
@@ -31,6 +31,8 @@ class SlsBlockImpl : public torch::nn::Module {
   using Relu  = torch::nn::ReLU;        //!< Relu type.
 
  public:
+  using TensorList = std::vector<torch::Tensor>; //!< List of tensors.
+
   /// Default constructor.
   SlsBlockImpl() = default;
 
@@ -58,8 +60,7 @@ class SlsBlockImpl : public torch::nn::Module {
   ///
   /// It returns a new tensor
   /// \param x The input tensor to pass through the block.
-  auto
-  forward(const std::vector<torch::Tensor>& x) -> std::vector<torch::Tensor>;
+  auto forward(const TensorList& x) -> TensorList;
 
  private:
   Layer conv_1_   = nullptr; //!< First conv layer.
@@ -83,6 +84,9 @@ class SlsBlockImpl : public torch::nn::Module {
     int64_t stride,
     int64_t padding) -> Layer;
 };
+
+/// Wrapper to make the sls block into a torch module.
+TORCH_MODULE(SlsBlock);
 
 } // namespace flame::models
 
