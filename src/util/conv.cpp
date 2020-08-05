@@ -17,6 +17,39 @@
 
 namespace flame {
 
+auto conv_3x3_bn(
+  int64_t input_channels,
+  int64_t output_channels,
+  int64_t stride,
+  int64_t padding) -> torch::nn::Sequential {
+  constexpr int64_t kernel_size_xy = 1;
+  constexpr bool    bias           = false;
+  return torch::nn::Sequential{
+    torch::nn::Conv2d(
+      torch::nn::Conv2dOptions(input_channels, output_channels, kernel_size_xy)
+        .stride(stride)
+        .padding(padding)
+        .bias(bias)),
+    torch::nn::BatchNorm2d(output_channels),
+    torch::nn::ReLU(torch::nn::ReLUOptions().inplace(true))};
+}
+
+auto conv_3x3_bn(
+  int64_t input_channels, int64_t output_channels, int64_t stride)
+  -> torch::nn::Sequential {
+  constexpr int64_t kernel_size_xy = 3;
+  constexpr int64_t padding        = 1;
+  constexpr bool    bias           = false;
+  return torch::nn::Sequential{
+    torch::nn::Conv2d(
+      torch::nn::Conv2dOptions(input_channels, output_channels, kernel_size_xy)
+        .stride(stride)
+        .padding(padding)
+        .bias(bias)),
+    torch::nn::BatchNorm2d(output_channels),
+    torch::nn::ReLU(torch::nn::ReLUOptions().inplace(true))};
+}
+
 auto conv_7x7(
   int64_t input_channels,
   int64_t output_channels,

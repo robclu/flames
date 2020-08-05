@@ -10,21 +10,24 @@
 
 set(FLAME_INCLUDE_DIR ${flame_SOURCE_DIR}/include)
 set(FLAME_SOURCE_DIR  ${flame_SOURCE_DIR}/src)
-include_directories(${FLAME_INCLUDE_DIR} ${TORCH_INCLUDE_DIRS})
+include_directories(
+  ${FLAME_INCLUDE_DIR} ${TORCH_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+set(LIBS ${TORCH_LIBRARIES} ${OpenCV_LIBS})
 
-#===== [resnet_v2] ============================================================#
+#===== [resnet] ===============================================================#
 
-set(RESNETV2_SOURCES resnet_v2.cpp)
+set(RESNET_SOURCES resnet.cpp)
 list(
-  APPEND RESNETV2_SOURCES
+  APPEND RESNET_SOURCES
     ${FLAME_SOURCE_DIR}/models/basic_block.cpp
     ${FLAME_SOURCE_DIR}/models/bottleneck.cpp
+    ${FLAME_SOURCE_DIR}/transforms/transforms.cpp
     ${FLAME_SOURCE_DIR}/util/conv.cpp
 )
 
-add_executable(resnetv2 ${RESNETV2_SOURCES})
-target_link_libraries(resnetv2 "${TORCH_LIBRARIES}")
-set_property(TARGET resnetv2 PROPERTY CXX_STANDARD 17)
+add_executable(resnet ${RESNET_SOURCES})
+target_link_libraries(resnet ${LIBS})
+set_property(TARGET resnet PROPERTY CXX_STANDARD 17)
 
 # The following code block is suggested to be used on Windows.
 # According to https://github.com/pytorch/pytorch/issues/25457,

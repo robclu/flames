@@ -29,6 +29,32 @@ constexpr int64_t stride_2 = 2; //!< Constants for a stride of two.
 
 //==--- [functions] --------------------------------------------------------==//
 
+/// Returns a sequential network with a 2d convolution with \p input_channels,
+/// \p output_channels, and \p stride, with a 2D batchnorm, and an inplace ReLU
+/// layer, and a kernel width of 3.
+/// \param input_channels  The number of input channels.
+/// \param output_channels The number of output channels.
+/// \param stride          The stride for the convolution.
+/// \param padding         The padding for the convolution.
+auto conv_1x1_bn(
+  int64_t input_chanels,
+  int64_t output_channels,
+  int64_t stride  = 1,
+  int64_t padding = 1) -> torch::nn::Sequential;
+
+/// Returns a sequential network with a 2d convolution with \p input_channels,
+/// \p output_channels, and \p stride, with a 2D batchnorm, and an inplace ReLU
+/// layer, and a kernel width of 3.
+/// \param input_channels  The number of input channels.
+/// \param output_channels The number of output channels.
+/// \param stride          The stride for the convolution.
+/// \param padding         The padding for the convolution.
+auto conv_3x3_bn(
+  int64_t input_chanels,
+  int64_t output_channels,
+  int64_t stride  = 1,
+  int64_t padding = 1) -> torch::nn::Sequential;
+
 /// Returns a torch::nn::Conv2d operation with a 7x7 kernel, wiht no bias.
 /// \param input_channels  The number of input channels.
 /// \param output_channels The number of output channels.

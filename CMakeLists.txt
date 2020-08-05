@@ -21,6 +21,8 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
+find_package(OpenCV REQUIRED)
+
 #===== [subdirs] ==============================================================#
 
 add_subdirectory(docs)

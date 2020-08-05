@@ -19,9 +19,8 @@
 #include "basic_block.hpp"
 #include "bottleneck.hpp"
 #include <flame/util/conv.hpp>
-#include <torch/script.h>
+#include <flame/util/load.hpp>
 #include <array>
-#include <filesystem>
 
 namespace flame::models {
 
@@ -259,24 +258,6 @@ class Resnet : public torch::nn::ModuleHolder<ResnetImpl<Block>> {
   /// Inherit all the base functionality.
   using torch::nn::ModuleHolder<ResnetImpl<Block>>::ModuleHolder;
 };
-
-/// Loads the pretrained parameters from the archive at \p archive_name into
-/// the \p model. This uses the environment variable FLAME_MODEL_PATH to
-/// get load the archive.
-/// \param  model        The model to load the pretrained data from.
-/// \param  archive_name The name of the archive to load.
-/// \tparam Model        The type of the model.
-template <typename Model>
-auto load_pretrained(Model& model, std::string archive_name) -> void {
-  namespace fs   = std::filesystem;
-  auto root_path = std::getenv("FLAME_MODEL_PATH");
-  if (!root_path) {
-    assert(false && "Model path not loaded: Set $FLAME_MODEL_PATH!");
-  }
-  auto model_path = fs::path(root_path).append(archive_name);
-  std::cout << model_path << std::endl;
-  torch::load(model, model_path);
-}
 
 //==--- [resnet implementations] -------------------------------------------==//
 
