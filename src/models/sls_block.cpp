@@ -23,12 +23,12 @@ SlsBlockImpl::SlsBlockImpl(
   int64_t skip,
   int64_t planes,
   int64_t outplanes,
-  bool    is_first = false,
-  int64_t stride   = 1)
+  bool    is_first,
+  int64_t stride)
 : conv_1_{make_layer(inplanes, planes, 3, stride, 1)},
   conv_2_{make_layer(planes, planes, 1, 1, 0)},
   conv_3_{make_layer(planes, planes / 2, 3, 1, 1)},
-  conv_4_{make_layer(planes / 2, planes, 1, 1 0)},
+  conv_4_{make_layer(planes / 2, planes, 1, 1, 0)},
   conv_5_{make_layer(planes, planes / 2, 3, 1, 1)},
   conv_6_{make_layer(2 * planes + (is_first ? 0 : skip), outplanes, 1, 1, 0)},
   is_first_{is_first} {
@@ -40,10 +40,19 @@ SlsBlockImpl::SlsBlockImpl(
   register_module("conv6", conv_6_);
 }
 
+SlsBlockImpl::SlsBlockImpl(const SlsBlockOptions& options)
+: SlsBlockImpl(
+    options.inplanes,
+    options.skip,
+    options.planes,
+    options.outplanes,
+    options.is_first,
+    options.stride) {}
+
 auto SlsBlockImpl::forward(const TensorList& x) -> TensorList {
-  if (is_first_ && x.size() != 1 || !is_first_ && x.size() != 2) {
-    assert(false && "Invalid tensor input size!");
-  }
+  assert(
+    ((is_first_ && x.size() <= 2) || (!is_first_ && x.size() == 2)) &&
+    "Invalid tensor input size!");
   const auto& input = x[0];
   auto        d1    = conv_1_->forward(input);
   auto        d2    = conv_3_->forward(conv_2_->forward(d1));
@@ -53,7 +62,7 @@ auto SlsBlockImpl::forward(const TensorList& x) -> TensorList {
     return {out, std::move(out)};
   }
   return {conv_6_->forward(torch::cat({d1, d2, d3, x[1]}, 1)), x[1]};
-}
+} // namespace flame::models
 
 auto SlsBlockImpl::make_layer(
   int64_t inplanes,

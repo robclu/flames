@@ -21,6 +21,16 @@
 
 namespace flame::models {
 
+/// Options for an SLS block.
+struct SlsBlockOptions {
+  int64_t inplanes;         //!< Number of input planes.
+  int64_t skip;             //!< Number of skip inputs.
+  int64_t planes;           //!< Number of planes for block middle layers
+  int64_t outplanes;        //!< Number of output planes.
+  int64_t stride   = 1;     //!< Stride for the block.
+  bool    is_first = false; //!< If the block is the first block.
+};
+
 /// This class defines and SLS Block from the paper
 /// XNect: Real-time Multi-person 3D Human Pose Estimation with a Single RGB
 /// Camera, Mehta et al. 2019 : https://arxiv.org/abs/1907.00837.
@@ -51,6 +61,10 @@ class SlsBlockImpl : public torch::nn::Module {
     bool    is_first = false,
     int64_t stride   = 1);
 
+  /// Constructor to create the block from the block \p options.
+  /// \param options The options for the bl
+  SlsBlockImpl(const SlsBlockOptions& options);
+
   /// Feeds the first tensor from \p x through the block in the forward
   /// direction, and uses the second as the input to the skip if this block
   /// is not the first block.
@@ -58,8 +72,9 @@ class SlsBlockImpl : public torch::nn::Module {
   /// This will fail if `x.size() == 1 && !is_first` or `x.size() == 2 &&
   /// is_first()`.
   ///
-  /// It returns a new tensor
-  /// \param x The input tensor to pass through the block.
+  /// It returns a new tensor list.
+  ///
+  /// \param x The input tensors to pass through the block.
   auto forward(const TensorList& x) -> TensorList;
 
  private:

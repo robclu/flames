@@ -29,6 +29,21 @@ add_executable(resnet ${RESNET_SOURCES})
 target_link_libraries(resnet ${LIBS})
 set_property(TARGET resnet PROPERTY CXX_STANDARD 17)
 
+#===== [selectsls] ============================================================#
+
+set(SELECTSLS_SOURCES selectsls_net.cpp)
+list(
+  APPEND SELECTSLS_SOURCES
+    ${FLAME_SOURCE_DIR}/models/sls_block.cpp
+    ${FLAME_SOURCE_DIR}/models/select_sls_net.cpp
+    ${FLAME_SOURCE_DIR}/transforms/transforms.cpp
+    ${FLAME_SOURCE_DIR}/util/conv.cpp
+)
+
+add_executable(selectsls ${SELECTSLS_SOURCES})
+target_link_libraries(selectsls ${LIBS})
+set_property(TARGET selectsls PROPERTY CXX_STANDARD 17)
+
 # The following code block is suggested to be used on Windows.
 # According to https://github.com/pytorch/pytorch/issues/25457,
 # the DLLs need to be copied to avoid memory errors.

@@ -16,7 +16,7 @@
 #ifndef FLAME_UTIL_CONV_HPP
 #define FLAME_UTIL_CONV_HPP
 
-#include <torch/torch.h>
+#include "stack_sequential.hpp"
 
 namespace flame {
 
@@ -40,7 +40,7 @@ auto conv_1x1_bn(
   int64_t input_chanels,
   int64_t output_channels,
   int64_t stride  = 1,
-  int64_t padding = 1) -> torch::nn::Sequential;
+  int64_t padding = 1) -> StackSequential;
 
 /// Returns a sequential network with a 2d convolution with \p input_channels,
 /// \p output_channels, and \p stride, with a 2D batchnorm, and an inplace ReLU
@@ -53,7 +53,7 @@ auto conv_3x3_bn(
   int64_t input_chanels,
   int64_t output_channels,
   int64_t stride  = 1,
-  int64_t padding = 1) -> torch::nn::Sequential;
+  int64_t padding = 1) -> StackSequential;
 
 /// Returns a torch::nn::Conv2d operation with a 7x7 kernel, wiht no bias.
 /// \param input_channels  The number of input channels.
